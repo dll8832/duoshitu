@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd ">
+
+    <!-- 静态资源文件的处理-->
+    <mvc:default-servlet-handler />
+
+    <!-- 扫描package方便注解依赖注入-->
+    <context:component-scan base-package="com.shop" />
+
+    <mvc:annotation-driven />
+
+    <!-- 定时任务的注解驱动 -->
+    <task:annotation-driven/>
+
+    <!-- 启用@Aspect注解 -->
+    <aop:aspectj-autoproxy />
+
+    <!-- 视图配置 -->
+    <bean id="freemarkerConfig"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer" >
+        <property name="templateLoaderPath" value="/WEB-INF/views/" />
+        <property name="defaultEncoding" value="UTF-8" />
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="number_format">0.##########</prop> <!--解决数字问题-->
+                <prop key="boolean_format">true,false</prop> <!--解决页面布尔值的输出-->
+                <prop key="tag_syntax">square_bracket</prop> <!-- auto_detect:自动选择(选择第一种标签语法) angle_bracket(<#if>) square_bracket[#if]-->
+                <prop key="classic_compatible">true</prop> <!--非空不会报错-->
+                <prop key="template_update_delay">0</prop> <!--缓存时间-->
+                <prop key="default_encoding">UTF-8</prop>
+                <prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+                <prop key="date_format">yyyy-MM-dd</prop>
+                <prop key="time_format">HH:mm:ss</prop>
+            </props>
+        </property>
+        <property name="freemarkerVariables">
+            <map>
+                <entry key="hello_world" value-ref="helloDirective" />
+                <entry key="navigation_list" value-ref="navigationDirective" />
+                <entry key="hot_search_keywords" value-ref="hotSearchKeywordsDirective" />
+                <entry key="product_category_root_list" value-ref="productCategoryRootListDirective" />
+                <entry key="product_category_children_list" value-ref="productCategoryChildrenListDirective" />
+                <entry key="brand_list" value-ref="brandListDirective" />
+                <entry key="promotion_list" value-ref="promotionListDirective" />
+                <entry key="ad_position" value-ref="adPositionDirective" />
+                <entry key="ad_list" value-ref="adDirective" />
+                <entry key="article_category_root_list" value-ref="articleCategoryRootListDirective" />
+                <entry key="article_list" value-ref="articleListDirective" />
+                <entry key="goods_list" value-ref="goodsListDirective" />
+                <entry key="friend_link_list" value-ref="friendLinkListDirective" />
+                <!--<entry key="product_category_parent_list" value-ref="productCategoryParentListDirective" />-->
+                <!--<entry key="attribute_list" value-ref="attributeDirective" />-->
+
+            </map>
+        </property>
+    </bean>
+
+    <!-- 视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="prefix" value="" />
+        <property name="suffix" value=".ftl" />
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+    </bean>
+
+    <!-- 文本转化 -->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--图片验证码配置 -->
+    <bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
+        <property name="config">
+            <bean class="com.google.code.kaptcha.util.Config">
+                <constructor-arg>
+                    <props>
+                        <prop key="kaptcha.border">yes</prop><!--是否有边框 -->
+                        <prop key="kaptcha.border.color">105,179,90</prop><!--设置边框颜色 -->
+                        <prop key="kaptcha.textproducer.font.color">red</prop><!--验证码文本字符颜色 默认为Color.BLACK -->
+                        <prop key="kaptcha.session.key">code</prop><!--验证码 -->
+                        <prop key="kaptcha.textproducer.font.names">宋体,楷体,微软雅黑</prop><!--设置字体样式 -->
+                        <prop key="kaptcha.border.thickness"></prop><!--边框粗细度 默认为1 -->
+                        <prop key="kaptcha.producer.impl"></prop><!--验证码生成器 默认为DefaultKaptcha -->
+                        <prop key="kaptcha.textproducer.impl"></prop><!-- 验证码文本生成器 默认为DefaultTextCreator -->
+                        <prop key="kaptcha.textproducer.char.string">1234567890qwertyuiopasdfghjklzxcvbnm</prop><!--验证码文本字符内容范围 默认为abcde2345678gfynmnpwx -->
+                        <prop key="kaptcha.textproducer.char.length">4</prop><!-- 验证码文本字符长度 默认为5 -->
+                        <prop key="kaptcha.textproducer.font.size">50</prop><!--验证码文本字符大小 默认为40 -->
+                        <prop key="kaptcha.textproducer.char.space">6</prop>    <!--验证码文本字符间距 默认为2 -->
+                        <prop key="kaptcha.image.width">200</prop>    <!--验证码图片宽度 默认为200 -->
+                        <prop key="kaptcha.image.height">60</prop> <!--验证码图片高度 默认为40 -->
+                    </props>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
+
+</beans>

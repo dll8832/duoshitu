@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd ">
+
+    <!-- 扫描package方便注解依赖注入-->
+    <context:component-scan base-package="com.shop" />
+
+    <mvc:annotation-driven />
+    <context:property-placeholder location="classpath:redis.properties" />
+
+    <!--监控主机-->
+    <bean id="master" class="org.springframework.data.redis.connection.RedisNode">
+        <!--要跟哨兵配置文件监控主机名称一致-->
+        <property name="name" value="${master.name}"></property>
+    </bean>
+
+    <!--哨兵配置-->
+    <bean id="redisSentinelConfiguration" class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
+        <property name="master" ref="master" />
+        <property name="sentinels">
+            <set>
+                <bean class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value="${sentinel.host}"></constructor-arg>
+                    <constructor-arg name="port" value="${sentinel.port}"></constructor-arg>
+                </bean>
+            </set>
+        </property>
+    </bean>
+
+    <!--配置连接池-->
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="${pool.maxtotal}"/>
+        <property name="maxIdle" value="${pool.maxidle}" />
+        <property name="maxWaitMillis" value="${pool.maxwaitmillis}" />
+    </bean>
+
+    <!--连接工厂-->
+    <bean id="jedisConnectionFactory"
+          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:pool-config-ref="poolConfig">
+        <constructor-arg name="sentinelConfig" ref="redisSentinelConfiguration"></constructor-arg>
+        <property name="password" value="${master.password}"></property> <!--主机密码-->
+    </bean>
+
+    <!--配置RedisTemplate-->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory" />
+
+        <!--设置序列化方式
+		<property name="keySerializer" value="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"/>
+		<property name="valueSerializer" value="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"/>
+		<property name="hashKeySerializer" value="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"/>
+		<property name="hashValueSerializer" value="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"/>
+		-->
+
+    </bean>
+
+</beans>

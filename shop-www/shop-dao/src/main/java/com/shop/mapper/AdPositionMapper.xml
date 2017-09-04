@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shop.dao.AdPositionDao" >
+    <resultMap id="RM_Adposition" type="AdPosition">
+
+        <id property="id" column="id" />
+        <result property="createDate" column="create_date" />
+        <result property="modifyDate" column="modify_date" />
+        <result property="version" column="version" />
+        <result property="description" column="description" />
+        <result property="height" column="height" />
+        <result property="name" column="name" />
+        <result property="template" column="template" />
+        <result property="width" column="width" />
+        <!--单向一对一-->
+        <!--<association property="" javaType="" ></association>-->
+        <collection property="ads" ofType="Ad">
+            <id property="id" column="aid" />
+            <result property="createDate" column="create_date" />
+            <result property="modifyDate" column="modify_date" />
+            <result property="version" column="version" />
+            <result property="orders" column="orders" />
+            <result property="beginDate" column="begin_date" />
+            <result property="content" column="content" />
+            <result property="endDate" column="end_date" />
+            <result property="path" column="path" />
+            <result property="title" column="title" />
+            <result property="type" column="type" />
+            <!--<result property="type" column="type" javaType="com.shop.constant.TypeEnum"-->
+                    <!--typeHandler="com.shop.typehandler.TypeEnumHandler" />-->
+            <result property="url" column="url" />
+            <result property="adPosition" column="ad_position" />
+        </collection>
+    </resultMap>
+
+    <select id="findById" resultMap="RM_Adposition" >
+        SELECT
+            p.id,
+            p.NAME,
+            p.width,
+            p.height,
+            p.template,
+            a.id as aid,
+            a.begin_date,
+            a.content,
+            a.end_date,
+            a.orders,
+            a.path,
+            a.type,
+            a.title,
+            a.url,
+            a.version
+        FROM
+          xx_ad_position p
+        LEFT JOIN xx_ad a ON p.id = a.ad_position
+        WHERE
+            p.id = #{positionId}
+        ORDER BY
+          a.orders
+    </select>
+</mapper>

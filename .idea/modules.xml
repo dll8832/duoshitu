@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/shop-cache/shop-cache.iml" filepath="$PROJECT_DIR$/shop-cache/shop-cache.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-core/shop-core.iml" filepath="$PROJECT_DIR$/shop-core/shop-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-www/shop-dao/shop-dao.iml" filepath="$PROJECT_DIR$/shop-www/shop-dao/shop-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-parent.iml" filepath="$PROJECT_DIR$/shop-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-www/shop-service/shop-service.iml" filepath="$PROJECT_DIR$/shop-www/shop-service/shop-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-www/shop-web/shop-web.iml" filepath="$PROJECT_DIR$/shop-www/shop-web/shop-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shop-www/shop-www.iml" filepath="$PROJECT_DIR$/shop-www/shop-www.iml" />
+    </modules>
+  </component>
+</project>
